@@ -8,7 +8,7 @@ namespace GpuAssistant
     {
         IChatClient chatClient;
         List<ChatMessage> chatMessages = new(); // a lista de mensagens possibilita a LLM lembrar do contexto 
-        private readonly ChatOptions options = new() { MaxOutputTokens = 20 };
+        private readonly ChatOptions options = new() { MaxOutputTokens = 80 };
 
         public MainForm()
         {

@@ -30,12 +30,12 @@
         {
             input = new TextBox();
             pnlTextBox = new Panel();
-            tableLayoutPanel1 = new TableLayoutPanel();
+            tableLayoutPnlChat = new TableLayoutPanel();
             btnSendPrompt = new Button();
             pnlChatView = new Panel();
             responseRctb = new RichTextBox();
             pnlTextBox.SuspendLayout();
-            tableLayoutPanel1.SuspendLayout();
+            tableLayoutPnlChat.SuspendLayout();
             pnlChatView.SuspendLayout();
             SuspendLayout();
             // 
@@ -55,7 +55,7 @@
             // pnlTextBox
             // 
             pnlTextBox.BackColor = Color.Transparent;
-            pnlTextBox.Controls.Add(tableLayoutPanel1);
+            pnlTextBox.Controls.Add(tableLayoutPnlChat);
             pnlTextBox.Dock = DockStyle.Bottom;
             pnlTextBox.Location = new Point(0, 382);
             pnlTextBox.Name = "pnlTextBox";
@@ -63,22 +63,22 @@
             pnlTextBox.TabIndex = 3;
             pnlTextBox.Paint += pnlTextBox_Paint;
             // 
-            // tableLayoutPanel1
+            // tableLayoutPnlChat
             // 
-            tableLayoutPanel1.BackColor = Color.Black;
-            tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 92.125F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 7.875F));
-            tableLayoutPanel1.Controls.Add(btnSendPrompt, 1, 0);
-            tableLayoutPanel1.Controls.Add(input, 0, 0);
-            tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.ForeColor = Color.Black;
-            tableLayoutPanel1.Location = new Point(0, 0);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 1;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(800, 68);
-            tableLayoutPanel1.TabIndex = 4;
+            tableLayoutPnlChat.BackColor = Color.Black;
+            tableLayoutPnlChat.ColumnCount = 2;
+            tableLayoutPnlChat.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 92.125F));
+            tableLayoutPnlChat.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 7.875F));
+            tableLayoutPnlChat.Controls.Add(btnSendPrompt, 1, 0);
+            tableLayoutPnlChat.Controls.Add(input, 0, 0);
+            tableLayoutPnlChat.Dock = DockStyle.Fill;
+            tableLayoutPnlChat.ForeColor = Color.Black;
+            tableLayoutPnlChat.Location = new Point(0, 0);
+            tableLayoutPnlChat.Name = "tableLayoutPnlChat";
+            tableLayoutPnlChat.RowCount = 1;
+            tableLayoutPnlChat.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPnlChat.Size = new Size(800, 68);
+            tableLayoutPnlChat.TabIndex = 4;
             // 
             // btnSendPrompt
             // 
@@ -126,8 +126,8 @@
             ShowIcon = false;
             Text = "GPU Assitent";
             pnlTextBox.ResumeLayout(false);
-            tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
+            tableLayoutPnlChat.ResumeLayout(false);
+            tableLayoutPnlChat.PerformLayout();
             pnlChatView.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -135,7 +135,7 @@
         #endregion
         private TextBox input;
         private Panel pnlTextBox;
-        private TableLayoutPanel tableLayoutPanel1;
+        private TableLayoutPanel tableLayoutPnlChat;
         private Button btnSendPrompt;
         private Panel pnlChatView;
         private RichTextBox responseRctb;
