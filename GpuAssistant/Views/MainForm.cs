@@ -1,5 +1,6 @@
 using Microsoft.Extensions.AI;
 using OllamaSharp;
+using System.Web;
 using System.Windows.Forms;
 
 namespace GpuAssistant
@@ -38,14 +39,20 @@ namespace GpuAssistant
         {
             var userInput = input.Text.Trim();
 
+            responseRctb.SelectionStart = responseRctb.TextLength;
+            responseRctb.SelectionColor = Color.LightGreen;
+            responseRctb.AppendText( string.Concat("Voce: ", userInput, Environment.NewLine));
+
+            input.Clear();
+            input.Focus();
+
+
             if (string.IsNullOrEmpty(userInput))
                 return;
 
+            responseRctb.SelectionColor = Color.White;
             responseRctb.AppendText("Espere a resposta");
-
-
-            
-
+            responseRctb.AppendText(Environment.NewLine);
             responseRctb.AppendText(Environment.NewLine);
 
             
