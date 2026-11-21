@@ -1,21 +1,15 @@
-using Microsoft.Extensions.AI;
-using OllamaSharp;
-using System.Web;
-using System.Windows.Forms;
+using GpuAssistant.BLL;
 
 namespace GpuAssistant
 {
     public partial class MainForm : Form
     {
-        IChatClient chatClient;
-        List<ChatMessage> chatMessages = new(); // a lista de mensagens possibilita a LLM lembrar do contexto 
-        private readonly ChatOptions options = new() { MaxOutputTokens = 80 };
-
         public MainForm()
         {
-            chatClient = new OllamaApiClient(new Uri("http://localhost:11434"), "qwen2.5:1.5b");
-
             InitializeComponent();
+
+            ChatBLL.InitializeAPI();
+
             responseRctb.AppendText("Chat Qwen 2.5 - Olá no que posso ajudar?" + Environment.NewLine);
 
         }
@@ -39,42 +33,44 @@ namespace GpuAssistant
         {
             var userInput = input.Text.Trim();
 
-            responseRctb.SelectionStart = responseRctb.TextLength;
-            responseRctb.SelectionColor = Color.LightGreen;
-            responseRctb.AppendText( string.Concat("Voce: ", userInput, Environment.NewLine));
-
-            input.Clear();
-            input.Focus();
-
-
             if (string.IsNullOrEmpty(userInput))
                 return;
 
-            responseRctb.SelectionColor = Color.White;
-            responseRctb.AppendText("Espere a resposta");
+            input.Clear();
+            input.Focus();
+            btnSendPrompt.Enabled = false;
+
+            AppendColored(string.Concat("Você: ", userInput, Environment.NewLine), Color.LightGreen);
             responseRctb.AppendText(Environment.NewLine);
-            responseRctb.AppendText(Environment.NewLine);
+            AppendColored("Assistente: ", Color.White);
 
-            
-            chatMessages.Add(new ChatMessage(ChatRole.User, userInput));
-
-            responseRctb.AppendText("Assistente: ");
-
-            var botMessage = "";
-
-            // recebe a mensagem em chuncks
-            await foreach (var update in chatClient.GetStreamingResponseAsync(chatMessages, options))
+            try
             {
-                responseRctb.AppendText(update.Text);
+                await foreach (var chunk in ChatBLL.ReturnChatAnswer(userInput))
+                {
+                    responseRctb.AppendText(chunk);
+                }
 
-                botMessage += update.Text;
-
+                responseRctb.AppendText(Environment.NewLine);
+                responseRctb.AppendText("----End---");
+                responseRctb.AppendText(Environment.NewLine + Environment.NewLine);
+                responseRctb.ScrollToCaret();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao falar com o Ollama: {ex.Message}");
+            }
+            finally
+            {
+                btnSendPrompt.Enabled = true;
+            }
+        }
 
-            chatMessages.Add(new ChatMessage(ChatRole.Assistant, botMessage)); // salva a mensagem do bot 
-            
-            responseRctb.AppendText(Environment.NewLine);
-            responseRctb.AppendText("----End---"+Environment.NewLine);
+        private void AppendColored(string text, Color color)
+        {
+            responseRctb.SelectionStart = responseRctb.TextLength;
+            responseRctb.SelectionColor = color;
+            responseRctb.AppendText(text);
         }
     }
 }
