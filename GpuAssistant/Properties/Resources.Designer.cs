@@ -73,9 +73,9 @@ namespace GpuAssistant.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap send__2_ {
+        internal static System.Drawing.Bitmap sendPurple {
             get {
-                object obj = ResourceManager.GetObject("send (2)", resourceCulture);
+                object obj = ResourceManager.GetObject("sendPurple", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

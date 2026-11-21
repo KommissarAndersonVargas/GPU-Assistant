@@ -83,7 +83,7 @@
             // btnSendPrompt
             // 
             btnSendPrompt.BackColor = Color.Transparent;
-            btnSendPrompt.BackgroundImage = Properties.Resources.send;
+            btnSendPrompt.BackgroundImage = Properties.Resources.sendPurple;
             btnSendPrompt.BackgroundImageLayout = ImageLayout.Stretch;
             btnSendPrompt.Dock = DockStyle.Fill;
             btnSendPrompt.FlatStyle = FlatStyle.Flat;
@@ -125,6 +125,7 @@
             Controls.Add(pnlTextBox);
             Name = "MainForm";
             ShowIcon = false;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "GPU Assitent";
             pnlTextBox.ResumeLayout(false);
             tableLayoutPnlChat.ResumeLayout(false);
