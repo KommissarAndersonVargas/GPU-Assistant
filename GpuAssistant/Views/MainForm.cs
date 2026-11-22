@@ -14,21 +14,6 @@ namespace GpuAssistant
 
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pnlTextBox_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private async void btnSendPrompt_ClickAsync(object sender, EventArgs e)
         {
             var userInput = input.Text.Trim();

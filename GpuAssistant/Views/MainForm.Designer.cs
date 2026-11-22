@@ -50,7 +50,6 @@
             input.Name = "input";
             input.Size = new Size(731, 62);
             input.TabIndex = 1;
-            input.TextChanged += textBox1_TextChanged;
             // 
             // pnlTextBox
             // 
@@ -61,7 +60,6 @@
             pnlTextBox.Name = "pnlTextBox";
             pnlTextBox.Size = new Size(800, 68);
             pnlTextBox.TabIndex = 3;
-            pnlTextBox.Paint += pnlTextBox_Paint;
             // 
             // tableLayoutPnlChat
             // 
