@@ -10,7 +10,7 @@ namespace GpuAssistant
 
             ChatBLL.InitializeAPI();
 
-            responseRctb.AppendText("Phi3 Mini - Olá no que posso ajudar?" + Environment.NewLine);
+            responseRctb.AppendText("Qwen2.5:1.5b - Olá no que posso ajudar?" + Environment.NewLine);
 
         }
 

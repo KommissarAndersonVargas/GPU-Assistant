@@ -5,15 +5,16 @@ using System.Text;
 
 public static class ChatBLL
 {
-    private static IChatClient? chatClient;
-    private static ChatOptions? options;
-    private static readonly List<ChatMessage> chatMessages = new(); // a lista de mensagens possibilita a LLM lembrar do contexto
-    private static readonly string llmModel = "phi3:mini";
-    private static readonly string ollamaServerAddress = "http://localhost:11434";
-    private static readonly int maxOutputTokens = 200;
+    private static IChatClient? _chatClient;
+    private static ChatOptions? _options;
+    private static readonly List<ChatMessage> _chatMessages = new(); // a lista de mensagens possibilita a LLM lembrar do contexto
+    private static readonly string _llmModel = "qwen2.5:1.5b";
+    private static readonly string _ollamaServerAddress = "http://localhost:11434";
+    private static readonly int _maxOutputTokens = 200;
+    private static readonly float _defaultTemperature = 0.1f;
 
     // Regras de comportamento do assistente
-    private static readonly string basePrompt =
+    private static readonly string _basePrompt =
         "Você é um assistente da infraestrutura de GPUs da equipe. " +
         "Responda SOMENTE com base nos dados da infraestrutura informados abaixo. " +
         "Nunca invente modelos, quantidades ou memória. " +
@@ -31,44 +32,46 @@ public static class ChatBLL
 
     public static void InitializeAPI()
     {
-        if (chatClient is not null)
+        if (_chatClient is not null)
             return;
 
         // timeout maior para máquinas sem GPU dedicada
         var httpClient = new HttpClient
         {
-            BaseAddress = new Uri(ollamaServerAddress),
+            BaseAddress = new Uri(_ollamaServerAddress),
             Timeout = TimeSpan.FromMinutes(3)
         };
 
-        chatClient = new OllamaApiClient(httpClient, llmModel);
+        _chatClient = new OllamaApiClient(httpClient, _llmModel);
 
         ConfigureAPIOptions();
     }
 
     private static void ConfigureAPIOptions()
     {
-        options = new ChatOptions
+        _options = new ChatOptions
         {
-            MaxOutputTokens = maxOutputTokens,
-            Temperature = 0.1f // diminui a predição do modelo, a fim de deixa-lo restrito aos dados
+            MaxOutputTokens = _maxOutputTokens,
+            Temperature = _defaultTemperature // diminui a predição do modelo, a fim de deixa-lo restrito aos dados
         };
     }
 
     // Atualiza o system prompt com os dados atuais das GPUs consultados no sistema
     private static void RefreshSystemPrompt()
     {
-        var prompt = $"{basePrompt}\n\nDados atuais da infraestrutura:\n{GpuBLL.ListGpus()}";
+        var example = $"Usuário: Quantas GPUs temos?\nAssistente: Temos {GpuBLL.TotalGpus()} GPUs no total, sendo {GpuBLL.TotalAvailable()} disponíveis.\n";
 
-        if (chatMessages.Count > 0 && chatMessages[0].Role == ChatRole.System)
-            chatMessages[0] = new ChatMessage(ChatRole.System, prompt);
+        var prompt = $"{_basePrompt}\n{example}\nDados atuais da infraestrutura:\n{GpuBLL.ListGpus()}";
+
+        if (_chatMessages.Count > 0 && _chatMessages[0].Role == ChatRole.System)
+            _chatMessages[0] = new ChatMessage(ChatRole.System, prompt);
         else
-            chatMessages.Insert(0, new ChatMessage(ChatRole.System, prompt));
+            _chatMessages.Insert(0, new ChatMessage(ChatRole.System, prompt));
     }
 
     public static async IAsyncEnumerable<string> ReturnChatAnswer(string userInput)
     {
-        if (chatClient is null)
+        if (_chatClient is null)
             throw new InvalidOperationException("Chame ChatBLL.InitializeAPI() antes de usar o chat.");
 
         RefreshSystemPrompt();
@@ -79,22 +82,24 @@ public static class ChatBLL
             ? userInput
             : $"{userInput}\n\n(Dado do sistema: {relevant})";
 
-        chatMessages.Add(new ChatMessage(ChatRole.User, content));
+        _chatMessages.Add(new ChatMessage(ChatRole.User, content));
 
         var botMessage = new StringBuilder();
 
-        await foreach (var update in chatClient.GetStreamingResponseAsync(chatMessages, options))
+        await foreach (var update in _chatClient.GetStreamingResponseAsync(_chatMessages, _options))
         {
             botMessage.Append(update.Text);
             yield return update.Text;
         }
 
-        // executa quando o streaming termina
-        chatMessages.Add(new ChatMessage(ChatRole.Assistant, botMessage.ToString()));
+        // Salva a resposta do assistente no histórico, para o modelo lembrar o que já respondeu evitando assim
+        // responder as perguntas anteriores, dá memória de conversa ao modelo de IA
+
+        _chatMessages.Add(new ChatMessage(ChatRole.Assistant, botMessage.ToString()));
 
         const int maxHistory = 6; // mantem as últimas 3 perguntas e respostas para otimizar o código
 
-        while (chatMessages.Count > maxHistory + 1)
-            chatMessages.RemoveAt(1);
+        while (_chatMessages.Count > maxHistory + 1)
+            _chatMessages.RemoveAt(1);
     }
 }

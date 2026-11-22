@@ -4,7 +4,10 @@ namespace GpuAssistant.BLL
 {
     public static class GpuBLL
     {
-        private const string GpuBrand = "NVIDIA"; // alterar caso mude a marca
+        private const string _gpuBrand = "NVIDIA"; // alterar caso mude a marca
+
+        public static int TotalGpus() => Gpus.Sum(g => g.Quantity);
+        public static int TotalAvailable() => Gpus.Sum(g => g.Available);
 
         // dados simulados para evitar banco de dados ou arquivos
         private static readonly List<Gpu> Gpus = new()
@@ -25,7 +28,13 @@ namespace GpuAssistant.BLL
             var summary = $"Resumo: {Gpus.Count} modelos de GPU, {Gpus.Sum(g => g.Quantity)} GPUs no total, " +
                           $"{Gpus.Sum(g => g.Available)} disponíveis.";
 
-            return summary + "\n" + string.Join("\n", lines);
+            var byMemory = string.Join("; ", Gpus
+                .GroupBy(g => g.MemoryGB)
+                .OrderByDescending(grp => grp.Key)
+                .Select(grp => $"{grp.Key} GB: {string.Join(", ", grp.Select(g => g.Name))}"));
+
+            return summary + "\nPor memória: " + byMemory + "\n" + string.Join("\n", lines);
+
         }
 
         // procura GPUs citadas na pergunta e devolve os dados delas (anexados à mensagem do usuário)
@@ -43,12 +52,12 @@ namespace GpuAssistant.BLL
             return found.Count > 0
                 ? string.Join("\n", found.Select(g => $"{g.Name}: {g.Available} disponíveis de {g.Quantity}, memória {g.MemoryGB} GB"))
                 : null;
-        }
 
-        // remove marca e espaços: "NVIDIA RTX 4090" → "RTX4090"
-        private static string Normalize(string value)
-        {
-            return value.ToUpperInvariant().Replace(GpuBrand, "").Replace(" ", "");
+            // remove marca e espaços: "NVIDIA RTX 4090" → "RTX4090"
+            string Normalize(string value)
+            {
+                return value.ToUpperInvariant().Replace(_gpuBrand, "").Replace(" ", "");
+            }
         }
     }
 }
