@@ -8,13 +8,11 @@ public static class ChatBLL
     private static IChatClient? chatClient;
     private static ChatOptions? options;
     private static readonly List<ChatMessage> chatMessages = new(); // a lista de mensagens possibilita a LLM lembrar do contexto
-
-    //private static readonly string llmModel = "qwen2.5:1.5b";
     private static readonly string llmModel = "phi3:mini";
     private static readonly string ollamaServerAddress = "http://localhost:11434";
     private static readonly int maxOutputTokens = 200;
 
-    // Regras de comportamento do assistente (os dados são anexados a cada pergunta)
+    // Regras de comportamento do assistente
     private static readonly string basePrompt =
         "Você é um assistente da infraestrutura de GPUs da equipe. " +
         "Responda SOMENTE com base nos dados da infraestrutura informados abaixo. " +
@@ -53,7 +51,7 @@ public static class ChatBLL
         options = new ChatOptions
         {
             MaxOutputTokens = maxOutputTokens,
-            Temperature = 0.1f
+            Temperature = 0.1f // diminui a predição do modelo, a fim de deixa-lo restrito aos dados
         };
     }
 
@@ -94,7 +92,7 @@ public static class ChatBLL
         // executa quando o streaming termina
         chatMessages.Add(new ChatMessage(ChatRole.Assistant, botMessage.ToString()));
 
-        const int maxHistory = 6; // mantem as últimas 3 perguntas e respostas
+        const int maxHistory = 6; // mantem as últimas 3 perguntas e respostas para otimizar o código
 
         while (chatMessages.Count > maxHistory + 1)
             chatMessages.RemoveAt(1);

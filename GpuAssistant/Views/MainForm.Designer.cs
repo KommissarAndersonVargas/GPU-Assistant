@@ -126,7 +126,7 @@
             Name = "MainForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "GPU Assitent";
+            Text = "GPU Assitant";
             pnlTextBox.ResumeLayout(false);
             tableLayoutPnlChat.ResumeLayout(false);
             tableLayoutPnlChat.PerformLayout();

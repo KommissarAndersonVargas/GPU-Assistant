@@ -6,7 +6,7 @@ namespace GpuAssistant.BLL
     {
         private const string GpuBrand = "NVIDIA"; // alterar caso mude a marca
 
-        // dados simulados (fonte da verdade) para evitar banco de dados ou arquivos
+        // dados simulados para evitar banco de dados ou arquivos
         private static readonly List<Gpu> Gpus = new()
         {
             new Gpu { Name = "NVIDIA A100",     Quantity = 4, MemoryGB = 80, InUse = 1 },
